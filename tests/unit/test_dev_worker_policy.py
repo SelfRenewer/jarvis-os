@@ -124,6 +124,11 @@ def test_signature_binds_every_field() -> None:
         ("Bash", {"command": "uv run python -m json.tool .e{n,x}v"}, False),
         ("Bash", {"command": "uv run python -m json.tool .git/config"}, False),
         ("Bash", {"command": "uv run ruff check tests/*.py"}, True),
+        # only git status/diff/log: «git difftool -x» and «git mergetool --tool» run commands
+        ("Bash", {"command": "git difftool -x touch"}, False),
+        ("Bash", {"command": "git difftool --extcmd=touch"}, False),
+        ("Bash", {"command": "git mergetool --tool=vimdiff"}, False),
+        ("Bash", {"command": "git status --short"}, True),
         # searches: Grep reads contents, so its path/glob must not reach secret-like files
         ("Grep", {"pattern": "KEY", "path": ".env"}, False),
         ("Grep", {"pattern": "KEY", "glob": ".env*"}, False),
@@ -185,6 +190,8 @@ def test_tool_lists_never_bypass() -> None:
     assert "Bash" not in tools  # never a bare Bash allow
     assert "WebFetch" in DISALLOWED_TOOLS
     assert "Bash(git push*)" in DISALLOWED_TOOLS
+    assert "Bash(git diff *)" in tools and "Bash(git diff)" in tools
+    assert not any(tool.startswith("Bash(git diff*") for tool in tools)  # would match «git difftool»
 
 
 def test_repo_config_rejects_shell_strings(tmp_path: Path) -> None:

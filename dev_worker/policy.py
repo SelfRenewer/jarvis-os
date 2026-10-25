@@ -42,6 +42,7 @@ GIT_GLOBAL_RISKY = re.compile(r"^(-c|-C|--git-dir|--work-tree|--exec-path|--name
 # git accepts unambiguous abbreviations of long options («--out=x»): any prefix of these is refused
 GIT_RISKY_OPTIONS = ("--output", "--no-index", "--ext-diff", "--textconv")  # writes a file / diffs any path
 GIT_SAFE_EXACT = {"--text"}  # a real option that happens to be a prefix of --textconv
+GIT_SUBCOMMANDS = {"status", "diff", "log"}  # the only git Claude may run; the worker commits itself
 FORBIDDEN_BASH_WORDS = re.compile(
     r"\b(curl|wget|nc|ncat|netcat|ssh|scp|sftp|rsync|sudo|su|printenv|env|export|set|history|security|"
     r"open|osascript|launchctl|crontab|git\s+push|git\s+remote|git\s+config|git\s+credential|npm\s+publish|"
@@ -94,14 +95,16 @@ def _names_secret(value: str, worktree: Path, *, glob: bool = False) -> bool:
 
 
 def _git_risky(args: list[str]) -> bool:
-    """`git -c …` / `-C dir` before the subcommand, or an option (or its abbreviation) that writes a file or
-    diffs any path."""
+    """Not `git status|diff|log`, `git -c …` / `-C dir` before the subcommand, or an option (or its abbreviation)
+    that writes a file or diffs any path."""
     start = 0
     while start < len(args) and args[start].startswith("-"):
         if GIT_GLOBAL_RISKY.match(args[start]):
             return True
         start += 1
-    names = [arg.split("=", 1)[0] for arg in args[start:]]
+    if start >= len(args) or args[start] not in GIT_SUBCOMMANDS:  # difftool -x / mergetool run any command
+        return True
+    names = [arg.split("=", 1)[0] for arg in args[start + 1 :]]
     return any(
         len(name) > 2 and name.startswith("--") and name not in GIT_SAFE_EXACT and option.startswith(name)
         for name in names
@@ -247,7 +250,8 @@ def claude_env_overrides() -> dict[str, str]:
 def allowed_tools_for(repo: RepoConfig) -> list[str]:
     tools = ["Read", "Glob", "Grep", "Edit", "Write", "TodoWrite"]
     tools += [f"Bash({pattern})" for pattern in repo.allowed_bash]
-    tools += ["Bash(git status*)", "Bash(git diff*)", "Bash(git log*)"]
+    # exact words: «git diff*» would also allow «git difftool -x <any command>»
+    tools += [f"Bash(git {sub}{rest})" for sub in sorted(GIT_SUBCOMMANDS) for rest in ("", " *")]
     return tools
 
 
