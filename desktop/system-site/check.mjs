@@ -103,6 +103,7 @@ async function main() {
   const env = {
     JARVIS_DESKTOP_CONFIG: config, JARVIS_SYSTEM_SESSIONS: sessionsFile, JARVIS_SYSTEM_FIXTURE: fixture,
     JARVIS_TLT_DIR: join(dir, 'tlt'), JARVIS_TLT_PORT: String(lmfPort),
+    JARVIS_OS_HARDWARE_ID: 'MAC-A', // not ioreg: the checks also run on Linux CI, where it does not exist
   }; // prettier-ignore
   const port = await freePort();
   let server = await start(port, env);

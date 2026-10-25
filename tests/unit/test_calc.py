@@ -186,7 +186,7 @@ async def test_outages() -> None:
     lines = (await fx.convert(ConversionRequest(None, "USD", ()))).splitlines()
     assert not any("QRL" in line for line in lines)  # a default coin without a quote is left out
     assert "• QRL — курс недоступен" in await fx.convert(ConversionRequest(Decimal(1), "USD", ("QRL",)))
-    fx._fiat = (0.0, fx._fiat[1]) if fx._fiat else None  # expire the cache
+    fx._fiat = (float("-inf"), fx._fiat[1]) if fx._fiat else None  # expire it (monotonic() is small on a new VM)
     api.unavailable = True
     stale = await fx.convert(ConversionRequest(Decimal(1), "USD", ("RUB",)))
     assert stale.splitlines()[-1].startswith("⚠️ Нет связи — последние известные курсы")
