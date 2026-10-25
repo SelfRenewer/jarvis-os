@@ -1,0 +1,29 @@
+idevicediagnostics: querying AppleSmartBattery…
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IORegistry</key>
+	<dict>
+		<key>BatteryData</key>
+		<dict>
+			<key>Serial</key>
+			<string>FAKEBATTERY00</string>
+		</dict>
+		<key>CycleCount</key>
+		<integer>171</integer>
+		<key>DesignCapacity</key>
+		<integer>4768</integer>
+		<key>NominalChargeCapacity</key>
+		<integer>4798</integer>
+		<key>AppleRawMaxCapacity</key>
+		<integer>4700</integer>
+		<key>Temperature</key>
+		<integer>2950</integer>
+		<key>Voltage</key>
+		<integer>4012</integer>
+	</dict>
+	<key>Status</key>
+	<string>Success</string>
+</dict>
+</plist>

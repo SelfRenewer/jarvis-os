@@ -1,0 +1,45 @@
+WARNING: lockdownd returned a note before the plist — noise the parser must skip.
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ActivationState</key>
+	<string>Activated</string>
+	<key>BasebandStatus</key>
+	<string>BBInfoAvailable</string>
+	<key>BuildVersion</key>
+	<string>24A100</string>
+	<key>DeviceClass</key>
+	<string>iPhone</string>
+	<key>DeviceName</key>
+	<string>Тестовый iPhone &amp; кейс</string>
+	<key>HardwareModel</key>
+	<string>D94AP</string>
+	<key>InternationalMobileEquipmentIdentity</key>
+	<string>350000000000001</string>
+	<key>InternationalMobileEquipmentIdentity2</key>
+	<string>350000000000002</string>
+	<key>ModelNumber</key>
+	<string>MFYQ4</string>
+	<key>PasswordProtected</key>
+	<true/>
+	<key>ProductType</key>
+	<string>iPhone18,2</string>
+	<key>ProductVersion</key>
+	<string>27.0.1</string>
+	<key>RegionInfo</key>
+	<string>ZA/A</string>
+	<key>SerialNumber</key>
+	<string>FAKESERIAL01</string>
+	<key>SupportedDeviceFamilies</key>
+	<array>
+		<integer>1</integer>
+	</array>
+	<key>UniqueChipID</key>
+	<integer>1234567890</integer>
+	<key>WiFiAddressData</key>
+	<data>
+	AAECAwQF
+	</data>
+</dict>
+</plist>

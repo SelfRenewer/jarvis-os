@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: jarvis
+          POSTGRES_PASSWORD: jarvis
+          POSTGRES_DB: jarvis_test
+        ports: ["55432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U jarvis -d jarvis_test"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgresql+asyncpg://jarvis:jarvis@localhost:55432/jarvis_test
+      DATABASE_URL: postgresql+asyncpg://jarvis:jarvis@localhost:55432/jarvis_test
+      # No personal secrets are needed: every external service is faked in the normal suite.
+      ALLOW_LIVE_CALL_TESTS: "false"
+      ALLOW_LIVE_CLAUDE_TESTS: "false"
+      ALLOW_LIVE_PURCHASES: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --all-extras --frozen
+      - name: lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: typecheck
+        run: uv run mypy
+      - name: migrations (upgrade → downgrade → upgrade → drift check)
+        run: |
+          uv run alembic upgrade head
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+          uv run alembic check
+      - name: tests (unit + integration + e2e, mocks only)
+        run: uv run pytest -q
+      - name: docker image builds
+        run: docker build -t jarvis-app:ci .

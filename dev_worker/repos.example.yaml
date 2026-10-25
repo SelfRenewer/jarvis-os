@@ -1,0 +1,26 @@
+# Copy to dev_worker/repos.yaml (not committed) on the development machine.
+# The server only ever sends a repo_id; paths and commands live here, on the trusted machine.
+server_url: http://jarvis-vps.tailnet-name.ts.net:8080   # Tailscale MagicDNS name of the VPS
+worker_id: dev-mac
+adapter: sdk            # sdk | cli | fake
+worktrees_dir: ~/.jarvis-dev-worker/worktrees
+max_turns: 60
+max_budget_usd: 5.0     # per job; Claude Code stops when exceeded
+timeout_seconds: 3600
+# model: claude-opus-5  # optional; default = Claude Code's configured model
+
+repos:
+  golden-app:
+    path: ~/code/golden-app
+    base_branch: main
+    remote: origin
+    push: false                       # never force; pushing the feature branch is opt-in
+    test: ["uv", "run", "pytest", "-q"]   # argv lists only — never a shell string
+    lint: ["uv", "run", "ruff", "check", "."]
+    typecheck: ["uv", "run", "mypy", "."]
+    allowed_bash:                     # what Claude may run (Claude Code permission rule syntax)
+      - "uv run pytest*"
+      - "uv run ruff*"
+      - "uv run mypy*"
+    env_passthrough: []               # extra non-secret env vars for checks
+    check_timeout_seconds: 900

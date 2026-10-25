@@ -1,0 +1,21 @@
+# Public HTTPS entrypoint (compose profile "public"). Only webhooks and health are exposed publicly;
+# the admin and dev-worker APIs stay private (reach them over Tailscale / localhost).
+{$JARVIS_DOMAIN} {
+	encode gzip
+	@public path /health /webhooks/*
+	handle @public {
+		reverse_proxy api:8080
+	}
+	handle {
+		respond "Not found" 404
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		-Server
+	}
+	log {
+		output stdout
+		format json
+	}
+}

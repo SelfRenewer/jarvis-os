@@ -1,0 +1,38 @@
+/* Jarvis OS — its menu over a page it shows from another app (TLT at /tlt/), in the same place and look as on its own
+   pages (style.css .topbar: a pill at the top centre). Own class names and a div (the app styles every <nav> as its
+   column menu); the app's page starts under a band the pill sits in. */
+.os-bar {
+  position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000;
+  display: flex; flex-direction: row; align-items: center; gap: 4px; padding: 4px; box-sizing: border-box;
+  max-width: calc(100vw - 32px); overflow-x: auto; scrollbar-width: none;
+  background: rgba(8, 15, 26, 0.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(127, 216, 255, 0.18);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.os-bar::-webkit-scrollbar { display: none; }
+.os-bar a {
+  display: inline-block; flex: none; padding: 6px 12px; border: 0; border-radius: 0; background: none;
+  color: #7fd8ff; font-size: 13px; text-decoration: none; white-space: nowrap;
+}
+.os-bar a:hover, .os-bar a:focus-visible { color: #d9e5f5; background: none; outline: none; }
+.os-bar a[aria-current="page"] { color: #d9e5f5; box-shadow: inset 0 -2px 0 #7fd8ff; }
+/* A solid band under the pill: the page scrolls beneath it, and the app's sticky column menu and title bar both stop
+   at its lower edge, so their top corners meet in one line. */
+body.with-os-bar { padding-top: 62px; box-sizing: border-box; }
+body.with-os-bar::before {
+  content: ""; position: fixed; top: 0; left: 0; right: 0; height: 62px; z-index: 999;
+  background: var(--bg, #0e1014); border-bottom: 1px solid var(--line, #242b3a);
+}
+body.with-os-bar .topbar { top: 62px; }
+@media (min-width: 821px) {
+  body.with-os-bar .sidebar { top: 62px; height: calc(100vh - 62px); }
+  body.with-os-bar #app { min-height: calc(100vh - 62px); }
+}
+@media (max-width: 760px) {
+  /* Centred by auto margins, not justify-content: a centred row that overflows cuts its first item off unreachably. */
+  .os-bar { top: 12px; left: 12px; right: 12px; transform: none; max-width: none; justify-content: flex-start; }
+  .os-bar a:first-child { margin-left: auto; }
+  .os-bar a:last-child { margin-right: auto; }
+  .os-bar a { padding: 6px 9px; font-size: 12px; }
+}

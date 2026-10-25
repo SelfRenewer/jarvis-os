@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- macOS: cp to ~/Library/LaunchAgents/, adjust paths, then `launchctl load ~/Library/LaunchAgents/com.jarvis.dev-worker.plist` -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.jarvis.dev-worker</string>
+  <key>WorkingDirectory</key><string>/Users/YOU/Projects/jarvis-os</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/uv</string><string>run</string><string>jarvis-dev-worker</string><string>run</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/Users/YOU/.local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+    <key>DEV_WORKER_REPOS</key><string>/Users/YOU/Projects/jarvis-os/dev_worker/repos.yaml</string>
+    <key>DEV_WORKER_TOKEN_FILE</key><string>/Users/YOU/.config/jarvis/dev_worker_token</string>
+    <key>DEV_WORKER_SIGNING_KEY_FILE</key><string>/Users/YOU/.config/jarvis/dev_worker_signing_key</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/Users/YOU/Library/Logs/jarvis-dev-worker.log</string>
+  <key>StandardErrorPath</key><string>/Users/YOU/Library/Logs/jarvis-dev-worker.log</string>
+</dict>
+</plist>

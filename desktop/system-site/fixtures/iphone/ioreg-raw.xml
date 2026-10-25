@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+	<key>IORegistry</key>
+	<dict>
+		<key>AppleRawMaxCapacity</key>
+		<integer>3700</integer>
+		<key>CycleCount</key>
+		<integer>850</integer>
+		<key>DesignCapacity</key>
+		<integer>4768</integer>
+		<key>Temperature</key>
+		<integer>4210</integer>
+	</dict>
+</dict>
+</plist>

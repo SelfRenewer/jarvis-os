@@ -1,0 +1,17 @@
+# Linux dev machine: ~/.config/systemd/user/jarvis-dev-worker.service ; `systemctl --user enable --now jarvis-dev-worker`
+[Unit]
+Description=JARVIS Dev Worker (pulls approved development jobs)
+After=network-online.target tailscaled.service
+
+[Service]
+WorkingDirectory=%h/code/JarvisOS
+Environment=DEV_WORKER_REPOS=%h/code/JarvisOS/dev_worker/repos.yaml
+Environment=DEV_WORKER_TOKEN_FILE=%h/.config/jarvis/dev_worker_token
+Environment=DEV_WORKER_SIGNING_KEY_FILE=%h/.config/jarvis/dev_worker_signing_key
+ExecStart=%h/.local/bin/uv run jarvis-dev-worker run
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

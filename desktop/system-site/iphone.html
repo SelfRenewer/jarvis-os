@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Проверка iPhone по кабелю: модель, память, состояние аккумулятора, тип устройства и регион; данные читаются прямо с телефона.">
+  <title>Проверка iPhone · Jarvis OS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%237fd8ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%237fd8ff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-sites page-iphone">
+  <nav class="topbar" aria-label="Меню Jarvis OS">
+    <a class="tb" href="/">Карта</a>
+    <a class="tb" href="/sites">Сайты</a>
+    <a class="tb" href="/lab">Лаборатория</a>
+    <a class="tb" href="/iphone" aria-current="page">iPhone</a>
+    <a class="tb" href="/devices">Телефон</a>
+    <a class="tb" href="/tlt">TLT</a>
+    <a class="tb" href="/crm">CRM</a>
+  </nav>
+
+  <main class="sites-main">
+    <header class="sites-head">
+      <h1>Проверка iPhone</h1>
+      <p class="sites-sub">Подключите телефон кабелем, разблокируйте его и нажмите на нём «Доверять этому компьютеру». Данные читаются прямо с телефона на этом Mac и никуда не отправляются.</p>
+    </header>
+
+    <div class="iphone-run">
+      <button id="check" type="button" class="btn primary big">Проверить iPhone</button>
+      <p id="run-state" class="run-state" aria-live="polite"></p>
+    </div>
+
+    <div id="banner" class="banner" hidden></div>
+    <section id="summary" class="summary" hidden aria-live="polite"></section>
+
+    <div id="result" hidden>
+      <div class="site-grid iphone-grid">
+        <article class="site-card" aria-labelledby="device-title">
+          <h2 id="device-title" class="card-title">Устройство</h2>
+          <dl id="device" class="kv"></dl>
+        </article>
+        <article class="site-card" aria-labelledby="storage-title">
+          <h2 id="storage-title" class="card-title">Память</h2>
+          <dl id="storage" class="kv"></dl>
+        </article>
+        <article class="site-card" aria-labelledby="battery-title">
+          <h2 id="battery-title" class="card-title">Аккумулятор</h2>
+          <dl id="battery" class="kv"></dl>
+        </article>
+      </div>
+    </div>
+
+    <section aria-labelledby="manual-title">
+      <h2 id="manual-title">Проверьте на самом телефоне</h2>
+      <ul id="manual" class="checklist"></ul>
+    </section>
+
+    <section aria-labelledby="limits-title">
+      <h2 id="limits-title">Чего через кабель не узнать</h2>
+      <ul id="limits" class="limits"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="iphone.js"></script>
+</body>
+</html>

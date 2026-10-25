@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Diagnostics</key>
+	<dict>
+		<key>GasGauge</key>
+		<dict>
+			<key>CycleCount</key>
+			<integer>171</integer>
+			<key>DesignCapacity</key>
+			<integer>4768</integer>
+			<key>FullChargeCapacity</key>
+			<integer>96</integer>
+			<key>Status</key>
+			<string>Success</string>
+		</dict>
+	</dict>
+	<key>Status</key>
+	<string>Success</string>
+</dict>
+</plist>

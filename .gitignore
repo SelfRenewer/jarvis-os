@@ -1,0 +1,57 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.env
+.env.*
+!.env.example
+backups/
+*.dump
+dev_worker/repos.yaml
+secrets/
+.DS_Store
+
+# Google OAuth client files downloaded from the Cloud Console (secrets: keep out of git)
+client_secret_*.json
+*.pem
+*.p12
+
+# agent worktrees (Claude Code)
+.claude/worktrees/
+
+# Jarvis OS page: local screenshots from UI checks
+desktop/system-site/screenshots/
+desktop/system-site/data/
+desktop/system-site/vendor/mediapipe/wasm/vision_wasm_internal.wasm
+desktop/system-site/vendor/mediapipe/hand_landmarker.task
+
+# logs, local databases, caches, build output
+*.log
+logs/
+*.db
+*.sqlite
+*.sqlite3
+node_modules/
+coverage/
+htmlcov/
+.coverage
+dist/
+build/
+
+# Swift / Xcode (desktop/JarvisMac)
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# OAuth tokens and keys that some tools drop next to the code
+token.json
+credentials.json
+*.key
+
+# personal agent notes and session state
+.claude/
+CLAUDE.md

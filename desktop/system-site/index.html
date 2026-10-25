@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Карта Jarvis: из чего он состоит, что сейчас работает, и строка, чтобы спросить его.">
+  <title>Jarvis OS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%237fd8ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%237fd8ff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="graph2d" class="graph2d" role="region" aria-label="Граф Jarvis: узлы и связи, как в Obsidian" hidden></div>
+  <div id="map2d" class="map2d" role="region" aria-label="Схема Jarvis: откуда приходят запросы, ядро, агенты и внешние сервисы" hidden></div>
+  <div id="graph" class="graph" role="img" aria-label="Трёхмерная карта частей Jarvis и связей между ними"></div>
+  <div id="labels" class="labels" aria-hidden="true"></div>
+
+  <header class="hud" id="hud" data-state="listening" data-health="ok">
+    <svg class="hud-ring" viewBox="0 0 200 200" aria-hidden="true">
+      <circle class="ring-glow" cx="100" cy="100" r="62"/>
+      <circle class="ring-ticks" cx="100" cy="100" r="92"/>
+      <circle class="ring-outer" cx="100" cy="100" r="84"/>
+      <g class="ring-arcs">
+        <circle class="arc arc-a" cx="100" cy="100" r="74"/>
+        <circle class="arc arc-b" cx="100" cy="100" r="74"/>
+        <circle class="arc arc-c" cx="100" cy="100" r="74"/>
+      </g>
+      <circle class="ring-inner" cx="100" cy="100" r="58"/>
+    </svg>
+    <div class="hud-text">
+      <h1 class="wordmark">J.A.R.V.I.S.</h1>
+      <p class="hud-state" id="hud-state" title="Jarvis слушает">LISTENING</p>
+    </div>
+  </header>
+
+  <nav class="topbar" aria-label="Меню Jarvis OS">
+    <div class="seg" role="group" aria-label="Вид карты">
+      <button type="button" data-view="2d" aria-pressed="true" title="Схема по колонкам">Схема</button>
+      <button type="button" data-view="graph" aria-pressed="false" title="Граф связей, как в Obsidian">Граф</button>
+      <button type="button" data-view="3d" aria-pressed="false" title="Объёмный граф">3D</button>
+    </div>
+    <button type="button" class="tb wide-only" data-toggle="panel">Поиск</button>
+    <button type="button" class="tb wide-only" data-toggle="pulse">Сейчас</button>
+    <a class="tb" href="/sites">Сайты</a>
+    <a class="tb" href="/lab">Лаборатория</a>
+    <a class="tb" href="/iphone">iPhone</a>
+    <a class="tb" href="/devices">Телефон</a>
+    <a class="tb" href="/tlt">TLT</a>
+    <a class="tb" href="/crm">CRM</a>
+  </nav>
+
+  <section class="pulse sheet" id="pulse" aria-labelledby="pulse-title">
+    <div class="sheet-head">
+      <h2 id="pulse-title">Сейчас</h2>
+      <button class="sheet-close" type="button" data-close="pulse" aria-label="Скрыть «Сейчас»">×</button>
+    </div>
+    <ul class="processes" id="processes"></ul>
+    <dl class="counts" id="counts"></dl>
+    <div class="attention" id="attention"></div>
+    <p class="updated" id="updated">Загружаю карту…</p>
+  </section>
+
+  <aside class="panel sheet" id="panel" aria-labelledby="panel-title">
+    <div class="sheet-head">
+      <h2 id="panel-title">Карта</h2>
+      <button class="sheet-close" type="button" data-close="panel" aria-label="Скрыть карту">×</button>
+    </div>
+    <div class="search">
+      <label class="visually-hidden" for="search">Найти на карте</label>
+      <input id="search" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Найти узел или команду" aria-controls="results">
+      <ul class="results" id="results" role="listbox" aria-label="Найденное"></ul>
+    </div>
+    <h3>Слои</h3>
+    <ul class="legend" id="legend"></ul>
+    <h3>Узлы со многими связями</h3>
+    <ol class="hubs" id="hubs"></ol>
+  </aside>
+
+  <aside class="card sheet" id="card" aria-label="Карточка узла" hidden>
+    <div class="sheet-head">
+      <p class="card-kind" id="card-kind"></p>
+      <button class="sheet-close" type="button" data-close="card" aria-label="Закрыть карточку">×</button>
+    </div>
+    <div id="card-body"></div>
+  </aside>
+
+  <nav class="tabs" aria-label="Панели">
+    <button type="button" data-open="panel">Карта и поиск</button>
+    <button type="button" data-open="pulse">Сейчас</button>
+  </nav>
+
+  <form class="ask" id="ask" autocomplete="off">
+    <label class="visually-hidden" for="ask-text">Спросить Jarvis</label>
+    <input id="ask-text" name="text" maxlength="1000" enterkeyhint="send"
+           placeholder="Спросите Jarvis: «что у меня завтра?»">
+    <button type="submit" id="ask-send">Спросить</button>
+  </form>
+  <p class="visually-hidden" id="ask-status" role="status" aria-live="polite"></p>
+
+  <noscript><p class="noscript">Карте нужен JavaScript.</p></noscript>
+  <script src="vendor/3d-force-graph-1.80.1.min.js"></script>
+  <script src="map2d.js"></script>
+  <script src="graph2d.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Лаборатория Jarvis: модели в 3D — MacBook Pro 16″ разбирается руками в воздухе, кольцо надевается на виртуальную руку.">
+  <title>Jarvis Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%237fd8ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%237fd8ff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="lab.css">
+</head>
+<body data-state="listening" class="split">
+  <div id="stage" class="stage" aria-hidden="true"></div>
+
+  <!-- the two halves: the 3D is drawn into them; they take the mouse, touch and wheel -->
+  <section id="pane-model" class="pane pane-model" aria-label="Модель целиком"></section>
+  <section id="pane-part" class="pane pane-part" aria-labelledby="part-title">
+    <header class="pane-head">
+      <p class="pane-kicker">Осмотр детали</p>
+      <h2 id="part-title">Деталь не выбрана</h2>
+    </header>
+    <p id="part-empty" class="pane-empty">Нажмите на деталь слева или в списке, задержите на ней палец — или возьмите её щипком и перенесите сюда.</p>
+    <div id="part-info" class="part-info" hidden>
+      <p id="part-about"></p>
+      <div class="buttons">
+        <button id="btn-part-view" type="button">↺ Вид</button>
+        <button id="btn-part-clear" type="button">Убрать</button>
+      </div>
+      <p class="hint-small">Мышь или щипок над этой половиной — крутить в любую сторону · колесо или две руки — ближе · кулак — убрать</p>
+    </div>
+  </section>
+
+  <div id="label" class="label" hidden></div>
+  <div id="cursor" class="cursor" hidden aria-hidden="true"></div>
+  <div id="chip" class="chip" hidden aria-hidden="true"></div>
+
+  <header class="hud">
+    <div class="ring" aria-hidden="true"><span></span></div>
+    <div>
+      <p class="wordmark">J.A.R.V.I.S. · LAB</p>
+      <p class="state" id="hud-state">LISTENING</p>
+      <p class="hint" id="hud-hint" aria-live="polite"></p>
+    </div>
+    <a class="back" href="/">← Карта Jarvis</a>
+  </header>
+
+  <nav class="toolbar" aria-label="Модель и управление">
+    <div class="models" role="group" aria-label="Модель">
+      <button type="button" data-model="macbook" aria-pressed="true">MacBook Pro 16″</button>
+      <button type="button" data-model="ring" aria-pressed="false">💍 Кольцо</button>
+    </div>
+    <div class="for-split">
+      <label class="slider">Разборка
+        <input id="explode" type="range" min="0" max="100" value="0" aria-label="Насколько разобрать">
+      </label>
+      <div class="buttons">
+        <button id="btn-explode" type="button">Разобрать</button>
+        <button id="btn-assemble" type="button">Собрать</button>
+        <button id="btn-reset" type="button">Сброс</button>
+        <button id="btn-lock" type="button" aria-pressed="false" title="Жест 👍 или клавиша L">🔒 Зафиксировать</button>
+      </div>
+    </div>
+    <div class="for-ring buttons">
+      <button id="btn-wear" type="button" class="primary">💍 Надеть</button>
+      <button id="btn-unwear" type="button" disabled>Снять</button>
+      <button id="btn-reset-ring" type="button">Сброс</button>
+    </div>
+  </nav>
+
+  <ol id="parts" class="chips for-split" aria-label="Детали"></ol>
+
+  <section class="camera" aria-label="Камера и жесты">
+    <div class="preview">
+      <video id="video" playsinline muted></video>
+      <canvas id="hands" aria-hidden="true"></canvas>
+    </div>
+    <div class="camera-controls">
+      <button id="btn-camera" type="button" class="primary">Включить камеру</button>
+      <select id="camera-pick" hidden aria-label="Камера"></select>
+    </div>
+    <div class="camera-controls for-split">
+      <button id="btn-identify" type="button" disabled title="Поднесите деталь к камере">🔍 Что это за деталь?</button>
+    </div>
+    <details class="legend-box">
+      <summary>Жесты</summary>
+      <ul class="legend for-split">
+        <li><b>Щипок</b> — крутить ту половину, над которой рука (в любую сторону, и снизу)</li>
+        <li><b>Две руки щипком</b> — ближе-дальше</li>
+        <li><b>Ладонь</b> — разобрать · <b>кулак</b> — собрать</li>
+        <li><b>Разведите ладони</b> — разборка плавно</li>
+        <li><b>Указательный палец</b> — задержите на детали: она появится справа</li>
+        <li><b>Указать и сжать щипком</b> — взять деталь и перенести направо</li>
+        <li><b>👍</b> — зафиксировать разборку</li>
+        <li><b>Кулак</b> над правой половиной — убрать деталь</li>
+        <li>Мышь: клик по детали — справа; тяните фон — крутить; колесо — ближе</li>
+      </ul>
+      <ul class="legend for-ring">
+        <li>Включите камеру — появится ваша рука-голограмма</li>
+        <li><b>Безымянный палец</b> к кольцу — оно наденется</li>
+        <li><b>Кулак</b>, подержать — снять</li>
+        <li>Без руки: <b>щипок</b> или мышь — крутить кольцо</li>
+      </ul>
+    </details>
+    <p class="note">Видео не покидает этот Mac: руки распознаются прямо в браузере. Кнопка «Что это за деталь?» отправляет один кадр Джарвису (≈ $0.002), кадр не сохраняется.</p>
+  </section>
+
+  <article id="card" class="card" hidden aria-live="polite">
+    <button id="card-close" type="button" class="close" aria-label="Закрыть">×</button>
+    <h3 id="card-title"></h3>
+    <p id="card-about"></p>
+  </article>
+
+  <script type="module" src="lab.js"></script>
+</body>
+</html>
