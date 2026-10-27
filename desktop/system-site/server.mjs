@@ -426,12 +426,20 @@ async function api(req, res, path) {
   return json(res, 404, { error: 'Нет такого адреса.' });
 }
 
-/** A button on these pages: JSON from this page, this Mac, ≤ 60 a minute. Null when allowed, else the reply sent. */
+/** A button on these pages: JSON from this page, this Mac, ≤ 60 a minute. False when allowed; true once the refusal
+ * is sent. R39: it returned json()'s undefined, so `if (buttonRefused(…)) return` never stopped — the 403/429 went
+ * out and the action ran anyway (a paired phone, or any page on 127.0.0.1 with the same-site cookie). */
 function buttonRefused(req, res) {
-  if (!fromThisPage(req)) return json(res, 403, { error: 'Запрос отклонён: нужен JSON с этой же страницы.' });
-  if (!askAllowed(req)) return json(res, 403, { error: 'Кнопки — только с этого Mac.' });
-  if (!buttonLimit.take()) return json(res, 429, { error: 'Слишком часто.' });
-  return null;
+  const refusal = !fromThisPage(req)
+    ? [403, 'Запрос отклонён: нужен JSON с этой же страницы.']
+    : !askAllowed(req)
+      ? [403, 'Кнопки — только с этого Mac.']
+      : !buttonLimit.take()
+        ? [429, 'Слишком часто.']
+        : null;
+  if (!refusal) return false;
+  json(res, refusal[0], { error: refusal[1] });
+  return true;
 }
 
 /** One iPhone check at a time: a second click while it runs gets the same answer. The report (serial, IMEI) goes only

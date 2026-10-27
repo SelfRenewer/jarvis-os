@@ -268,6 +268,15 @@ async function main() {
     ok((await request(port, '/api/os/remote', { headers: { cookie: phoneCookie } })).status === 403, 'the phone controls with a phone session → 403');
     r = await request(port, '/api/os/remote/tunnel', { method: 'POST', headers: { ...json, cookie: phoneCookie, origin: own }, body: '{"hours":1}' });
     ok(r.status === 403, 'a phone cannot open the tunnel');
+
+    // R39: a refused button used to answer 403/429 and still run its action. A page on another port of 127.0.0.1 is
+    // the same site, so the Strict cookie goes along: its text/plain «дома: включить» must change nothing.
+    const lanNow = async () => JSON.parse((await request(port, '/api/os/remote', { headers: { cookie: session } })).body).lan;
+    const lanBefore = JSON.stringify(await lanNow());
+    r = await request(port, '/api/os/remote/lan', { method: 'POST', headers: { cookie: session, origin: 'http://127.0.0.1:5181', 'content-type': 'text/plain' }, body: '{"on":true}' });
+    ok(r.status === 403, 'R39: «дома» from another port on 127.0.0.1 → 403');
+    await new Promise((res2) => setTimeout(res2, 300)); // the old code went on after the 403
+    ok(JSON.stringify(await lanNow()) === lanBefore, 'R39: …and «дома» stays as it was');
     r = await request(port, '/tlt/', { headers: { cookie: phoneCookie } });
     ok(r.status === 200 && !r.body.includes('href="/sites"'), 'a phone gets TLT without the Mac-only menu');
     ok((await request(port, '/', { headers: { cookie: phoneCookie } })).status === 200, 'a phone gets the map');
